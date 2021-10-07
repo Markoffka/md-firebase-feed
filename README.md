@@ -10,44 +10,59 @@
   url?f=[name]&l=[last]&m=[midle]&d=[date]&n=[number]
 ```
 
-| Parameter | Type     | Description               |
-| :-------- | :------- | :------------------------ |
-| `name`    | `string` | Имя на странице           |
-| `last`    | `string` | Фамилия на странице       |
-| `midle`   | `string` | Отчество на странице      |
-| `date`    | `string` | Дата рождения на странице |
-| `number`  | `number` | Номер на странице         |
+| Параметр | Тип      | Описание                  |
+| :------- | :------- | :------------------------ |
+| `name`   | `string` | [*] Имя на странице       |
+| `last`   | `string` | [*] Фамилия на странице   |
+| `midle`  | `string` | [*] Отчество на странице  |
+| `date`   | `string` | Дата рождения на странице |
+| `number` | `number` | Номер на странице         |
 
-## Demo
+[*] Вы можете ввести первую букву имени, остальное доставить любыми символами
 
-[Example url](https://md-firebase-feed.vercel.app/)
+#### Форматирование входящего текста
 
-## Features
+```js
+function formatTextToP(text) {
+  return text
+    .split('')
+    .map((_, i) => (i == 0 ? text[0] : '*'))
+    .join('')
+    .toString()
+    .toLowerCase();
+}
+```
+
+## Демо
+
+[Ссылка](https://md-firebase-feed.vercel.app/)
+
+## Фичи
 
 - Переход по кнопке "Назад" на страницу госуслуг
 - Нет неправильных данных
 
-## Run Locally
+## Запустить
 
-Clone the project
+Клонировать репозиторий
 
 ```bash
   git clone https://github.com/Markoffka/md-firebase-feed/tree/dev
 ```
 
-Go to the project directory
+Перейти к новой папке
 
 ```bash
   cd md-firebase-feed
 ```
 
-Install dependencies
+Установить зависимости
 
 ```bash
   npm install
 ```
 
-Start the server
+Запустить сервер
 
 ```bash
   npm run start
