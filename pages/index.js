@@ -1,3 +1,6 @@
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+/* eslint-disable @next/next/no-html-link-for-pages */
 import styled, { ThemeProvider } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { useList } from 'react-use';
@@ -52,6 +55,38 @@ export default function Home() {
     setName('');
     setData('');
     push({ name, data });
+  }
+
+  useEffect(() => {
+    const { f, l, m, d, p, n } = router.query;
+
+    f && setFirstName(formatTextToP(f));
+    l && setLastName(formatTextToP(l));
+    m && setMiddleName(formatTextToP(m));
+    p && setPass(p);
+    d && setDateOfBirth(d);
+    n && setUnrz(n);
+    setFullName([firstName, middleName, lastName].join(' ').toString());
+  }, [firstName, fullName, lastName, middleName, router.query]);
+
+  function formatTextToP(text) {
+    return text
+      .split('')
+      .map((_, i) => (i == 0 ? text[0] : '*'))
+      .join('')
+      .toString()
+      .toLowerCase();
+  }
+
+  function GetPass() {
+    return pass;
+  }
+  function GetFullname() {
+    return fullName;
+  }
+
+  function GetDayBirth() {
+    return dateOfBirth;
   }
 
   useEffect(() => {
