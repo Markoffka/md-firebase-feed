@@ -81,7 +81,7 @@ table {
 	border-spacing: 0;
 }
   :root{
-    --bg-dark: #000814;
+    --bg-dark: #edeef0;
     --bg-light: #001d3d;
     --primary: #ffd60a;
     --secondary: #003566;
