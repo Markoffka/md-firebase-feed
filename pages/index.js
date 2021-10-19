@@ -2,4 +2,4 @@ function HomePage() {
   return <>Home page</>;
 }
 
-export { HomePage };
+export default HomePage;
