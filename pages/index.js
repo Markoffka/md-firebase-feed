@@ -1,30 +1,39 @@
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 /* eslint-disable @next/next/no-html-link-for-pages */
 function QRC() {
+  const gosuslugi_url = 'https://www.gosuslugi.ru';
   const [fullName, setFullName] = useState(null);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [middleName, setMiddleName] = useState(null);
+  const [firstName, setFirstName] = useState('A');
+  const [lastName, setLastName] = useState('B');
+  const [middleName, setMiddleName] = useState('TO');
   const [pass, setPass] = useState('72** ***377');
-  const [dateOfBirth, setDateOfBirth] = useState('27.02.1998');
-  const [unrz, setUnrz] = useState('9740000004029028');
+  const [dateOfBirth, setDateOfBirth] = useState('23.11.1976');
+  const [unrz, setUnrz] = useState('9740');
+
+  const [canCreate, setCanCreate] = useState(false);
+
   const router = useRouter();
   useEffect(() => {
     setFullName([firstName, middleName, lastName].join(' '));
   }, [firstName, fullName, lastName, middleName]);
 
   useEffect(() => {
-    const { f, l, m, d, p, n } = router.query;
-
-    f && setFirstName(formatTextToP(f));
-    l && setLastName(formatTextToP(l));
-    m && setMiddleName(formatTextToP(m));
-    p && setPass(p);
-    d && setDateOfBirth(d);
-    n && setUnrz(n);
-    setFullName([firstName, middleName, lastName].join(' ').toString());
+    try {
+      //IF SUCCESS -> SET DATA
+      const [f, l, m, d, p, n] = JSON.parse(Base64toArr(router.query.unrz));
+      console.log(f, l, m, d, p, n);
+      f && setFirstName(formatTextToP(f));
+      l && setLastName(formatTextToP(l));
+      m && setMiddleName(formatTextToP(m));
+      p && setPass(p);
+      d && setDateOfBirth(d);
+      n && setUnrz(n);
+      setFullName([firstName, middleName, lastName].join(' ').toString());
+    } catch (e) {
+      console.error(e);
+    }
   }, [firstName, fullName, lastName, middleName, router.query]);
 
   function formatTextToP(text) {
@@ -51,6 +60,24 @@ function QRC() {
     return unrz;
   }
 
+  // arr [fistname, secondname, middlename, pass, date, unrz]
+  function ArrToBase64(arr) {
+    let data = arr;
+    let buff = Buffer.from(JSON.stringify(data));
+    let stringToBase64 = buff.toString('base64');
+    return stringToBase64;
+  }
+
+  function Base64toArr(b64) {
+    let dbuff = Buffer.from(b64, 'base64');
+    let base64ToStringNew = dbuff.toString('utf8');
+    return JSON.parse(JSON.stringify(base64ToStringNew));
+  }
+
+  function onCancelClick() {
+    router.replace(gosuslugi_url);
+  }
+
   return (
     <>
       <Head>
@@ -60,12 +87,9 @@ function QRC() {
       <div className="vaccine-result">
         <div className="flex-container ml-6 mr-6 justify-between align-items-center mt-52 mb-32">
           <div className="ml-24">
-            <a href="/" className="logo"></a>
+            <a href={gosuslugi_url} className="logo"></a>
           </div>
-          <div
-            onClick="APP.toogleLang()"
-            className="translate-button flex-container mt-6 mr-24 align-items-center"
-          >
+          <div className="translate-button flex-container mt-6 mr-24 align-items-center">
             <div className="mr-8">
               <div className="lang-image ru">
                 <div className="lang-en">
@@ -346,7 +370,7 @@ function QRC() {
           </div>
 
           <div className="mt-24">
-            <a href="https://www.gosuslugi.ru" className="button">
+            <a onClick={onCancelClick} className="button">
               Закрыть
             </a>
           </div>
