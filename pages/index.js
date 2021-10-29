@@ -21,6 +21,7 @@ function QRC() {
 
   useEffect(() => {
     try {
+      if (!router.query.unrz) return;
       //IF SUCCESS -> SET DATA
       const [f, l, m, d, p, n] = JSON.parse(Base64toArr(router.query.unrz));
       console.log(f, l, m, d, p, n);
@@ -71,6 +72,7 @@ function QRC() {
   function Base64toArr(b64) {
     let dbuff = Buffer.from(b64, 'base64');
     let base64ToStringNew = dbuff.toString('utf8');
+    console.log(base64ToStringNew);
     return JSON.parse(JSON.stringify(base64ToStringNew));
   }
 
