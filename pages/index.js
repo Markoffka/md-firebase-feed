@@ -44,12 +44,12 @@ export function Header() {
           {session ? (
             <button
               className="bp3-button bp3-minimal bp3-icon-log-out"
-              onClick={signOut}
+              onClick={() => signOut()}
             ></button>
           ) : (
             <button
               className="bp3-button bp3-minimal bp3-icon-log-in"
-              onClick={signIn}
+              onClick={() => signIn()}
             ></button>
           )}
         </div>

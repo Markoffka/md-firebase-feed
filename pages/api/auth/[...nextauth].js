@@ -1,40 +1,68 @@
-import CredentialsProvider from 'next-auth/providers/credentials';
-import NextAuth from 'next-auth';
-
+/* eslint-disable import/no-anonymous-default-export */
 import { app } from '../../../libs/firebase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
-export default NextAuth({
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+let userAccount = null;
+
+const configuration = {
   pages: {
     signIn: '/auth/signin',
   },
+  cookie: {
+    secure: process.env.NODE_ENV && process.env.NODE_ENV === 'production',
+  },
+  session: {
+    jwt: true,
+    maxAge: 30 * 24 * 60 * 60,
+  },
   providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'name' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize({ username, password }, req) {
-        const firebaseAuth = (
-          await signInWithEmailAndPassword(getAuth(app), username, password)
+    Credentials({
+      id: 'credentials',
+      name: 'Login',
+      async authorize(credentials) {
+        const user = (
+          await signInWithEmailAndPassword(
+            getAuth(app),
+            credentials.email,
+            credentials.password
+          )
         ).user;
 
-        let user = {
-          name: firebaseAuth.uid,
-          email: firebaseAuth.email,
-          image: firebaseAuth.photoURL,
-          id: firebaseAuth.uid,
-        };
-
-        if (user) return user;
-        return null;
+        if (user !== null) {
+          userAccount = user;
+          return user;
+        } else {
+          return null;
+        }
       },
     }),
   ],
-  session: {
-    jwt: true,
-    maxAge: 2592000, // 30 days
+  callbacks: {
+    async signIn(user, account, profile) {
+      return !!user;
+    },
+    async session(session, token) {
+      if (userAccount !== null) {
+        session.user = userAccount;
+      } else if (
+        typeof token.user !== typeof undefined &&
+        (typeof session.user === typeof undefined ||
+          typeof session.user !== typeof undefined)
+      ) {
+        session.user = token.user;
+      } else if (typeof token !== typeof undefined) {
+        session.token = token;
+      }
+      return session;
+    },
+    async jwt(token, user, account, profile, isNewUser) {
+      if (typeof user !== typeof undefined) {
+        token.user = user;
+      }
+      return token;
+    },
   },
-  secret: process.env.SECRET || 'test_secret',
-});
+};
+export default (req, res) => NextAuth(req, res, configuration);
