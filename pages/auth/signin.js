@@ -46,7 +46,7 @@ export default function SignIn({ csrfToken }) {
         />
       </label>
       <label>
-        Email address
+        Password
         <input
           type="password"
           id="password"
